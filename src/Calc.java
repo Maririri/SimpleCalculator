@@ -2,14 +2,8 @@
  * Created by Mari on 08/05/15.
  */
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.DecimalFormat;
 
 public class Calc implements ActionListener {
@@ -18,46 +12,51 @@ public class Calc implements ActionListener {
 
     private JLabel l1, l2, l3, l4, l5, l6;
     private JTextField initPayment;
-    private JTextField totalSum;
+    private JTextField loan;
     private JTextField percentage;
     private JTextField period;
     private JTextField monthPayment;
-    private JTextField overpayments;
+    private JTextField overpayments1;
+    private JTextField overpayments2;
     JButton calcButton;
 
-    static double nInitPay = 0, nTotSum = 0, nPerc = 0, nPeriod = 0, nMonPay = 0, res = 0;
+    static double nCredit = 0;
+    static double nPerc = 0;
+    static double nPeriod = 0;
+    static double nMonPay = 0;
+    static double res1 = 0;
+    static double res2 = 0;
 
     Calc() {
         f = new JFrame("Calculator");
 
-        l1 = new JLabel("Initial payment");
-        l2 = new JLabel("Total Sum");
-        l3 = new JLabel("Percentage");
-        l4 = new JLabel("Period");
-        l5 = new JLabel("Monthly payment");
-        l6 = new JLabel("Overpayments");
+        l1 = new JLabel("Loan");
+        l2 = new JLabel("Percentage");
+        l3 = new JLabel("Period (months)");
+        l4 = new JLabel("Monthly payment");
+        l5 = new JLabel("Overpayments #v1");
+        l6 = new JLabel("Overpayments #v2");
 
         l1.setBounds(30, 40, 120, 30);
         l2.setBounds(30, 100, 120, 30);
         l3.setBounds(30, 160, 120, 30);
         l4.setBounds(30, 220, 120, 30);
         l5.setBounds(30, 350, 120, 30);
-        l6.setBounds(30, 410, 120, 30);
 
-        initPayment = new JTextField();
-        totalSum = new JTextField();
+        loan = new JTextField();
         percentage = new JTextField();
         period = new JTextField();
         monthPayment = new JTextField();
-        overpayments = new JTextField();
+        overpayments1 = new JTextField();
+        overpayments2 = new JTextField();
 
 
-        initPayment.setBounds(160, 40, 120, 30);
-        totalSum.setBounds(160, 100, 120, 30);
-        percentage.setBounds(160, 160, 120, 30);
-        period.setBounds(160, 220, 120, 30);
-        monthPayment.setBounds(160, 350, 120, 30);
-        overpayments.setBounds(160, 410, 120, 30);
+        loan.setBounds(160, 40, 120, 30);
+        percentage.setBounds(160, 120, 120, 30);
+        period.setBounds(160, 160, 120, 30);
+        monthPayment.setBounds(160, 220, 120, 30);
+        overpayments1.setBounds(160, 350, 120, 30);
+        overpayments2.setBounds(160, 420, 120, 30);
 
         calcButton = new JButton("Calculate");
         calcButton.setBounds(95, 290, 120, 40);
@@ -67,19 +66,18 @@ public class Calc implements ActionListener {
         f.add(l3);
         f.add(l4);
         f.add(l5);
-        f.add(l6);
 
-        f.add(initPayment);
-        f.add(totalSum);
+        f.add(loan);
         f.add(percentage);
         f.add(period);
         f.add(monthPayment);
-        f.add(overpayments);
+        f.add(overpayments1);
+        f.add(overpayments2);
 
         f.add(calcButton);
 
         f.setLayout(null);
-        f.setSize(310, 480);
+        f.setSize(310, 540);
         f.setLocationRelativeTo(null);
         f.setVisible(true);
         f.setResizable(false);
@@ -115,16 +113,21 @@ n — количество периодов, в течение которых в
         if (e.getSource() != calcButton)
             return;
 
-        nInitPay = Double.parseDouble(initPayment.getText());
-        nTotSum = Double.parseDouble(totalSum.getText());
+        nCredit = Double.parseDouble(loan.getText());
         nPerc = Double.parseDouble(percentage.getText()) / 1200;
-        nPeriod = Double.parseDouble(period.getText()) * 12;
+        nPeriod = Double.parseDouble(period.getText());
 
-        res = ((nPerc * Math.pow(1 + nPerc, nPeriod)) / (Math.pow(1 + nPerc, nPeriod) - 1))
-                * (nTotSum - nInitPay);
+        /*Average calculation*/
+        res1 = ((nPerc * Math.pow(1 + nPerc, nPeriod)) / (Math.pow(1 + nPerc, nPeriod) - 1))
+                * (nCredit);
 
-        monthPayment.setText("" + new DecimalFormat("#.##").format(res));
-        overpayments.setText("" + new DecimalFormat("#.##").format((res * nPeriod) - (nTotSum - nInitPay)));
+        /*Actual calculation*/
+        res2 = ((nPerc ) / (1 - Math.pow(1 + nPerc, - (nPeriod - 1))))
+                * (nCredit);
+
+        monthPayment.setText("" + new DecimalFormat("#.##").format(res2));
+        overpayments1.setText("" + new DecimalFormat("#.##").format((res1 * nPeriod) - (nCredit)));
+        overpayments2.setText("" + new DecimalFormat("#.##").format((res2 * nPeriod) - (nCredit)));
     }
 
     public static void main(String... s) {
